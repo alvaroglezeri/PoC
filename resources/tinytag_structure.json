@@ -1,0 +1,26 @@
+{
+    "album": "Hypercolour",
+    "albumartist": "CamelPhat",
+    "artist": "CamelPhat/Yannis/Foals",
+    "audio_offset": 197567,
+    "bitdepth": null,
+    "bitrate": 128.0,
+    "channels": 2,
+    "comment": "https://music.youtube.com/watch?v=OR5kjWNpN4s",
+    "composer": null,
+    "disc": "1",
+    "disc_total": "1",
+    "duration": 209.33427163969031,
+    "extra": {
+        "isrc": "GBARL2000697",
+        "text": "minor_version\u0000\ufeff0",
+        "copyright": "(P) 2020 CamelPhat Limited under exclusive licence to Sony Music Entertainment UK Limited"
+    },
+    "filesize": 3544165,
+    "genre": "Deep Tech House",
+    "samplerate": 44100,
+    "title": "Hypercolour",
+    "track": "1",
+    "track_total": "1",
+    "year": "2020-06-26"
+}
