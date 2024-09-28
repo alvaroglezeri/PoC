@@ -1,6 +1,6 @@
 import os
 # Define the __all__ variable
-__all__ = ["analysis", "exceptions", "logger"]
+__all__ = ["analysis", "exceptions", "logger", "soundlight"]
 
 print(f'Loading package "{__name__}":')
 print(f' > Root package: {__package__}')
@@ -13,3 +13,4 @@ print()
 from . import analysis
 from . import exceptions
 from . import logger
+from . import soundlight

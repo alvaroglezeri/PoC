@@ -115,7 +115,10 @@ class FileManager():
         #DOCUMENT
         DCL.log(CATEGORY.WARN, "FileManager._convertFileFromPath", f'Converting file to {self._conversionFormat[1].__qualname__}...')
 
-        newPath = f'{Path(path).stem}.{self._conversionFormat[0]}'
+        #print(Path(path).anchor)
+        #print(Path(path).parents[0])
+
+        newPath = f'{Path(path).parents[0]}/{Path(path).stem}.{self._conversionFormat[0]}'
         # PROBLEM: A lot of ffmpeg options were tried to solve 'Format not recognized' errors, until the seek(0) was discovered.
         input(path, v="quiet").output(newPath).overwrite_output().run()
         

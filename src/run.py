@@ -1,19 +1,22 @@
-from core.analysis.fileManager import FileManager
-from core.analysis.analysisDirector import AnalysisDirector
+import dependencies
+from core.soundlight import SoundLight
 import os
+import warnings
 
 if __name__ == "__main__":
     os.system('cls' if os.name == 'nt' else 'clear')
 
-    # logger.ENABLE = False
-    fm: FileManager = FileManager()
-    ad: AnalysisDirector = AnalysisDirector()
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            sl = SoundLight()
 
-    fm.addFileFromPath(r"resources\tinytag_structure.json") 
-    #fm.addFileFromPath(r"resources\CamelPhat, Yannis, Foals - Hypercolour.mp3") 
-
-    fm.selectFile(0)
-    ad.analyze()
-    
-    #fm.selectFile(1)
-    #ad.analyze()
+            sl.addFileFromPath(r"resources\Nigel Stanford - Cymatics.mp3") 
+            sl.selectFile(0)
+            sl.analyze()
+            
+            sl.addFileFromPath(r"resources\CamelPhat, Yannis, Foals - Hypercolour.mp3") 
+            sl.selectFile(1)
+            sl.analyze()
+    except:
+        pass

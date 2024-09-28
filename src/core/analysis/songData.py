@@ -44,7 +44,7 @@ class SongData():
         
         try:
             title: str = self._fileData.title
-            author: str = self._fileData.albumartist
+            author: str = self._fileData.artist
             length: str = secToMin(self._fileData.duration)
             return f'{title} - {author} ({length})'
         except Exception as e:

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 
-ENABLE: bool = True
+enable: bool = True
 class CATEGORY(Enum):
     ERROR = 'FAIL'
     INFO = 'INFO'
@@ -31,6 +31,10 @@ class Logger(ABC):
     def log(category: CATEGORY, location: str, msg: any) -> None:
         pass
 
+    @staticmethod
+    def isEnabled() -> bool:
+        pass
+
 class DCL(Logger):
     """
     Debug Console Logger
@@ -39,17 +43,21 @@ class DCL(Logger):
     """
     @staticmethod
     def log(msg: any) -> None:
-        if ENABLE:
+        if enable:
             print(f'[DEBUG]: {msg}') 
         
     @staticmethod
     def log(location: str, msg: any) -> None:
-        if ENABLE:
+        if enable:
             print(f'[DEBUG] at {location}: {msg}')
             
     @staticmethod
     def log(category: CATEGORY, location: str, msg: any) -> None:
-        if ENABLE:
+        if enable:
             print(f'[DEBUG:{category.value}] at {location}: {msg}')
+
+    @staticmethod
+    def isEnabled() -> bool:
+        return enable
     
 

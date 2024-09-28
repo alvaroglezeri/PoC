@@ -1,4 +1,5 @@
 from core.exceptions import NotFoundException
+import core.logger as Logger
 from ui.cli.menu import Menu
 from ui.cli.commands import *
 from ui.cli.consoleUtils import ConsoleUtils
@@ -6,6 +7,7 @@ from ui.cli.consoleUtils import ConsoleUtils
 class Cli():
 
     def __init__(self):
+        Logger.enable = False
         self.menu = Menu()
         self._c = ConsoleUtils
         self.setUpOptions()

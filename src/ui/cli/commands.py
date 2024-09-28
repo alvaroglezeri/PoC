@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from ui.cli.consoleUtils import ConsoleUtils
 from core.analysis.fileManager import FileManager
 from core.analysis.songData import SongData
-from core.analysis.analysisDirector import AnalysisDirector
+from core.analysis.analysisDirector import AnalysisDirector, Subscriber
 from core.exceptions import NotFoundException
 
 class Command(ABC):
@@ -121,11 +121,16 @@ class SelectFile(Command):
             self._c.printWarn(f'There are no files available.')
 
  
-class AnalyzeFile(Command):
+class AnalyzeFile(Command, Subscriber):
     def __init__(self) -> None:
         self._fm = FileManager()
         self._ad = AnalysisDirector()
+        self._ad.subscribe(self)
         self._c = ConsoleUtils
+        self._lastNotification = None
+
+    def update(self, notification: Subscriber.Notification) -> None:
+        self._lastNotification: Subscriber.Notification = notification
 
     def getDescription(self) -> str:
         return f'Analyzes the selected file.'
@@ -136,19 +141,24 @@ class AnalyzeFile(Command):
     def execute(self) -> None:
         self._c.clear()
         self._c.printInfo(f'Analyzing file')
-        self._c.nl()
-
-        file: SongData = self._fm.getSelectedFile()
-        finished: bool
+        self._c.nl()        
+    
+        try:
+            self._ad.analyze()
         
-        if file is None:
+            finished: bool = False
+            while not finished:
+                status = self._lastNotification
+                if status is not None:
+                    self._c.printInfo(f'Status:')
+                    self._c.print(status)
+
+                    if status["finished"]:
+                        finished = True
+
+                    status = None # Waiting for new notification to display
+        except NotFoundException:
             self._c.printWarn(f'No file is selected.')
-            return
-        
-        while not finished:
-
-            status = self._ad.getCurrentInfo()
-            self._c.printInfo(f'Status: {status}')
-            pass
+            
 
 
