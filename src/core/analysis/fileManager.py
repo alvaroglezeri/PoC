@@ -1,7 +1,7 @@
 from core.analysis.songData import SongData
 from tinytag.tinytag import TinyTag,TinyTagException, Wave
 from pathlib import Path
-from ffmpeg import input, probe
+import ffmpeg
 from core.logger import DCL, CATEGORY
 from core.exceptions import DuplicateElementException, NotFoundException, CodecConversionExeption, InvalidFileException
 
@@ -64,14 +64,14 @@ class FileManager():
         else:
             self._conversionFormat = SUPPORTED_FORMATS[_DEFAULT_FORMAT]
 
-    def addFileFromPath(self, path: str) -> None:
+    def loadFileFromPath(self, path: str) -> None:
         """
         DOCUMENT
 
         Loads the file and its metadata with tinytag and magic.
         """
         
-        DCL.log(CATEGORY.INFO, "FileManager.addFileFromPath", f'Loading "{path}"...')
+        DCL.log(CATEGORY.INFO, "FileManager.loadFileFromPath", f'Loading "{path}"...')
         try:
             # FileManager manages the life cycle of the files.
             file = open(path, "rb") # with open(path, "rb") as file:
@@ -80,10 +80,10 @@ class FileManager():
             songTags.codec = {"name": songTags.__class__.__qualname__, "class": songTags.__class__}    # Obtaining file codec from the actual class parsed
             
             # Converting file format to .wav
-            DCL.log(CATEGORY.INFO, "FileManager.addFileFromPath", f'Detected codec: {songTags.codec["name"]}')
+            DCL.log(CATEGORY.INFO, "FileManager.loadFileFromPath", f'Detected codec: {songTags.codec["name"]}')
             if songTags.codec["class"] != self._conversionFormat[1] and self._convert:
                 newPath = self._convertFile(path)
-                DCL.log(CATEGORY.INFO ,"FileManager.addFileFromPath", f'Converted file to {self._conversionFormat[1].__qualname__}')
+                DCL.log(CATEGORY.INFO ,"FileManager.loadFileFromPath", f'Converted file to {self._conversionFormat[1].__qualname__}')
                 raise CodecConversionExeption()
                 
             # Building SongData object
@@ -91,24 +91,24 @@ class FileManager():
 
             if songData not in self._files:
                 self._files.append(songData)
-                DCL.log(CATEGORY.SUCCESS, "FileManager.addFileFromPath", f'Loaded "{path}".')
+                DCL.log(CATEGORY.SUCCESS, "FileManager.loadFileFromPath", f'Loaded "{path}".')
             else:
-                    DCL.log(CATEGORY.ERROR, "FileManager.addFileFromPath", f'File "{path}" already exists.')
-                    raise DuplicateElementException(f'This file already exists.')    
+                    DCL.log(CATEGORY.ERROR, "FileManager.loadFileFromPath", f'File "{path}" already exists.')
+                    raise DuplicateElementException(f'This file is already loaded.')    
         except CodecConversionExeption:
             # If the codec is invalid, we drop the current file and open the new, converted file
             file.close()
-            DCL.log(CATEGORY.WARN, "FileManager.addFileFromPath", f'Reloading file...')
-            self.addFileFromPath(newPath)           
+            DCL.log(CATEGORY.WARN, "FileManager.loadFileFromPath", f'Reloading file...')
+            self.loadFileFromPath(newPath)           
         except DuplicateElementException as dee:
-            DCL.log(CATEGORY.ERROR, "FileManager.addFileFromPath", dee)
+            DCL.log(CATEGORY.ERROR, "FileManager.loadFileFromPath", dee)
             raise dee
         except TinyTagException as tte:
             # PROBLEM: What if the file is not audio?
-            DCL.log(CATEGORY.ERROR, "FileManager.addFileFromPath", f'TinyTag error: {tte}')
+            DCL.log(CATEGORY.ERROR, "FileManager.loadFileFromPath", f'TinyTag error: {tte}')
             raise InvalidFileException(f'Invalid file because: "{tte}"')
         except Exception as e:
-            DCL.log(CATEGORY.ERROR, "FileManager.addFileFromPath", e)
+            DCL.log(CATEGORY.ERROR, "FileManager.loadFileFromPath", e)
             raise e
 
     def _convertFile(self, path) -> str:
@@ -120,7 +120,7 @@ class FileManager():
 
         newPath = f'{Path(path).parents[0]}/{Path(path).stem}.{self._conversionFormat[0]}'
         # PROBLEM: A lot of ffmpeg options were tried to solve 'Format not recognized' errors, until the seek(0) was discovered.
-        input(path, v="quiet").output(newPath).overwrite_output().run()
+        ffmpeg.input(path, v="quiet").output(newPath).overwrite_output().run()
         
         return newPath
 

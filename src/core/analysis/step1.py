@@ -1,9 +1,11 @@
+import allin1.analyze
+import allin1.sonify
+import allin1.visualize
 import librosa
 import numpy as np
 from typing import BinaryIO
 from deeprhythm import DeepRhythmPredictor
-
-import warnings
+import allin1
 
 
 class KeyAnalysis():
@@ -37,13 +39,9 @@ class KeyAnalysis():
     
 class BeatAnalysis():
     @staticmethod
-    def getBeat(file: BinaryIO) -> tuple[float, float, list[float]]:
+    def getBeat_deeprhythm(file: BinaryIO) -> tuple[float, float, list[float]]:
         file.seek(0)
         model = DeepRhythmPredictor(quiet=True)
-
-        #Silencing these warnings, as there is nothing I can do about them
-        #with warnings.catch_warnings():
-        #    warnings.simplefilter("ignore")
 
         #As the audio is loaded with Librosa, it supports loading an BinaryIO file
         bpm, confidence = model.predict(file, include_confidence=True)
@@ -55,10 +53,23 @@ class BeatAnalysis():
 
         return bpm, confidence, beats
 
-        
+    @staticmethod
+    def getBeat_AIO(filepath: str) -> tuple[float, list[float]]:
+        # FIXME: AIO does not support BinaryIO objects.
+        try:
+            print(f'Analyzing...')
+            result: allin1.typings.AnalysisResult = allin1.analyze(filepath, out_dir='./output')
+            print(f'Sonifying...')
+            sonified = allin1.sonify(result, multiprocess=False, out_dir='./output')
+            print(f'Visualizing...')
+            figure = allin1.visualize(result, multiprocess=False, out_dir='./output')
+        except Exception as e:
+            print(e)
+            raise
+        return result        
     
     @staticmethod
-    def getBeat_outdated(file: BinaryIO) -> float:
+    def getBeat_librosa(file: BinaryIO) -> float:
         # Load the audio file        
         file.seek(0)
         y, sr = librosa.load(file)

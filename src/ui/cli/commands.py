@@ -52,7 +52,7 @@ class AddFile(Command):
 
         file: object
         try:
-            self._fm.addFileFromPath(path)
+            self._fm.loadFileFromPath(path)
         except OSError as ose:
             self._c.printError(f'The file "{path}" could not be loaded:')
             self._c.printInfo(ose.strerror)

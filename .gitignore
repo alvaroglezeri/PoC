@@ -1,6 +1,8 @@
-/Nigel Stanford - Cymatics.wav
 __pycache__
 /.vscode
 /resources
 /env
 /.venv
+/demix
+/output
+/spec

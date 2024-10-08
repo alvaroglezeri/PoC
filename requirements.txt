@@ -1,9 +1,0 @@
-# Generate with PS > pipreqs . --force
-numpy==2.0.2
-torch==2.4.1
-torchaudio==2.4.1
-torchvision==0.19.1
-ffmpeg_python==0.2.0
-librosa==0.10.2.post1
-deeprhythm==0.0.12
-tinytag==1.10.1

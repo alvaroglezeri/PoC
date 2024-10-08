@@ -8,10 +8,10 @@ from core.logger import DCL, CATEGORY
 class Subscriber(ABC):
     #DOCUMENT
 
-    type Notification = dict[str, object]
+    #type Notification = dict[str, object]
     
     @abstractmethod
-    def update(data: Notification) -> None:
+    def update(data) -> None:
         pass
 
 class AnalysisDirector():
@@ -30,7 +30,7 @@ class AnalysisDirector():
         else:
             raise DuplicateElementException(f'Already subscribed')
 
-    def _notify(self, msg: Subscriber.Notification) -> None:
+    def _notify(self, msg) -> None:
         for subscriber in self._subscribers:
             subscriber.update(msg)
 
@@ -46,6 +46,7 @@ class AnalysisDirector():
         self._notify({"step": "3", "msg": "Analyzing beat..."})
         self._beatAnalysis()
         self._notify({"step": "3", "msg": "Analized beat."})
+        self._aio()
         self._notify({"finished": True})
     
     def _loadFile(self) -> None:
@@ -71,6 +72,13 @@ class AnalysisDirector():
     def _beatAnalysis(self) -> None:
         # Step 3: Beat analysis
         
-        bpm, confidence = BeatAnalysis.getBeat(self._selected.getFile())
+        bpm, confidence, beats = BeatAnalysis.getBeat_deeprhythm(self._selected.getFile())
         self._notify({"step": "3", "msg": f'Got bpm: {bpm}'})
+        # DCL.log(CATEGORY.INFO, "AnalysisDirector._beatAnalysis", f'Beats:')
+        # DCL.log(CATEGORY.INFO, "AnalysisDirector._beatAnalysis", beats)
         DCL.log(CATEGORY.INFO, "AnalysisDirector._beatAnalysis", f'Found bpm: {bpm} with {confidence*100//1}% confidence.')
+
+    def _aio(self) -> None:
+        DCL.log(CATEGORY.INFO, "AnalysisDirector._aio", f'AIO Results:')
+        r = BeatAnalysis.getBeat_AIO(self._selected.getPath())
+        print(r)

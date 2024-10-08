@@ -13,7 +13,7 @@ class SoundLight():
         logger.enable = setting
 
     def addFileFromPath(self, path: str) -> None:
-        self._fm.addFileFromPath(path)
+        self._fm.loadFileFromPath(path)
 
     def selectFile(self, i: int) -> None:
         self._fm.selectFile(i)
